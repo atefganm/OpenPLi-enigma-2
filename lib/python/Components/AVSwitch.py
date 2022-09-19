@@ -391,7 +391,7 @@ def InitAVSwitch():
 		config.av.osd_alpha = ConfigSlider(default=255, limits=(0, 255))
 		config.av.osd_alpha.addNotifier(setAlpha)
 
-	if SystemInfo["HasScaler_sharpness"]:
+	if os.path.exists("/proc/stb/vmpeg/0/pep_scaler_sharpness"):
 		def setScaler_sharpness(config):
 			myval = int(config.value)
 			try:
