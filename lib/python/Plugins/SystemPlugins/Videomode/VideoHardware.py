@@ -2,6 +2,7 @@ from Components.config import config, ConfigSelection, ConfigSubDict, ConfigYesN
 from Components.SystemInfo import SystemInfo
 from Tools.CList import CList
 from Tools.HardwareInfo import HardwareInfo
+from Components.About import about
 import os
 
 # The "VideoHardware" is the interface to /proc/stb/video.
@@ -10,7 +11,7 @@ import os
 # selected mode. No other strict checking is done.
 
 config.av.edid_override = ConfigYesNo(default=True)
-
+chipsetstring = about.getChipSetString()
 
 class VideoHardware:
 	rates = {} # high-level, use selectable modes.
@@ -403,44 +404,44 @@ class VideoHardware:
 		else:
 			wss = "auto"
 
-                print("[VideoHardware] -> setting aspect, policy, policy2, wss", aspect, policy, policy2, wss)
-                if chipsetstring.startswith("meson-6") and HardwareInfo().get_device_name() in ("dreamone", "dreamtwo"):
-                        arw = "0"
-                        if config.av.policy_43.value == "bestfit":
-                                arw = "10"
-                        if config.av.policy_43.value == "panscan":
-                                arw = "11"
-                        if config.av.policy_43.value == "letterbox":
-                                arw = "12"
-                        try:
-                                print("[Videomode] Write to /sys/class/video/screen_mode")
-                                open("/sys/class/video/screen_mode", "w").write(arw)
-                        except IOError:
+		print("[VideoHardware] -> setting aspect, policy, policy2, wss", aspect, policy, policy2, wss)
+		if chipsetstring.startswith("meson-6") and HardwareInfo().get_device_name() in ("dreamone", "dreamtwo"):
+			arw = "0"
+			if config.av.policy_43.value == "bestfit":
+				arw = "10"
+			if config.av.policy_43.value == "panscan":
+				arw = "11"
+			if config.av.policy_43.value == "letterbox":
+				arw = "12"
+			try:
+				print("[Videomode] Write to /sys/class/video/screen_mode")
+				open("/sys/class/video/screen_mode", "w").write(arw)
+			except IOError:
                                 print("[Videomode] Write to /sys/class/video/screen_mode failed.")
-                elif HardwareInfo().get_device_name() in ("dreamone", "dreamtwo"):
-                        arw = "0"
-                        if config.av.policy_43.value == "bestfit":
-                                arw = "10"
-                        if config.av.policy_43.value == "letterbox":
-                                arw = "11"
-                        if config.av.policy_43.value == "panscan":
-                                arw = "12"
-                        try:
-                                print("[Videomode] Write to /sys/class/video/screen_mode")
-                                open("/sys/class/video/screen_mode", "w").write(arw)
-                        except IOError:
-                                print("[Videomode] Write to /sys/class/video/screen_mode failed.")
+		elif HardwareInfo().get_device_name() in ("dreamone", "dreamtwo"):
+			arw = "0"
+			if config.av.policy_43.value == "bestfit":
+				arw = "10"
+			if config.av.policy_43.value == "letterbox":
+				arw = "11"
+			if config.av.policy_43.value == "panscan":
+				arw = "12"
+			try:
+				print("[Videomode] Write to /sys/class/video/screen_mode")
+				open("/sys/class/video/screen_mode", "w").write(arw)
+			except IOError:
+				print("[Videomode] Write to /sys/class/video/screen_mode failed.")
 
-                open("/proc/stb/video/aspect", "w").write(aspect)
-                open("/proc/stb/video/policy", "w").write(policy)
-                try:
-                        open("/proc/stb/denc/0/wss", "w").write(wss)
-                except IOError:
-                        pass
-                try:
-                        open("/proc/stb/video/policy2", "w").write(policy2)
-                except IOError:
-                        pass
+		open("/proc/stb/video/aspect", "w").write(aspect)
+		open("/proc/stb/video/policy", "w").write(policy)
+		try:
+			open("/proc/stb/denc/0/wss", "w").write(wss)
+		except IOError:
+			pass
+		try:
+			open("/proc/stb/video/policy2", "w").write(policy2)
+		except IOError:
+			pass
 
 
 video_hw = VideoHardware()
