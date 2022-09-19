@@ -417,7 +417,7 @@ class VideoHardware:
 				print("[Videomode] Write to /sys/class/video/screen_mode")
 				open("/sys/class/video/screen_mode", "w").write(arw)
 			except IOError:
-                                print("[Videomode] Write to /sys/class/video/screen_mode failed.")
+				print("[Videomode] Write to /sys/class/video/screen_mode failed.")
 		elif HardwareInfo().get_device_name() in ("dreamone", "dreamtwo"):
 			arw = "0"
 			if config.av.policy_43.value == "bestfit":
