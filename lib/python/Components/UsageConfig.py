@@ -119,10 +119,11 @@ def InitUsageConfig():
 		choicelist.append((str(i), ngettext("%d minute", "%d minutes", m) % m))
 	config.usage.pip_last_service_timeout = ConfigSelection(default="0", choices=choicelist)
 
-	if not exists(resolveFilename(SCOPE_HDD)):
+	defaultValue = resolveFilename(SCOPE_HDD)
+	if not exists(defaultValue):
 		try:
-			os.mkdir(resolveFilename(SCOPE_HDD), 0o755)
-		except (IOError, OSError):
+			mkdir(defaultValue, 0o755)
+		except OSError as err:
 			pass
 	defaultValue = resolveFilename(SCOPE_HDD)
 	config.usage.default_path = ConfigSelection(default=defaultValue, choices=[(defaultValue, defaultValue)])
