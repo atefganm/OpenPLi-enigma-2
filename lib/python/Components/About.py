@@ -3,11 +3,7 @@ import os
 import time
 import re
 from Tools.HardwareInfo import HardwareInfo
-from Components.SystemInfo import SystemInfo
 from sys import maxsize, modules, version_info
-from Tools.Directories import fileReadLine
-
-MODULE_NAME = __name__.split(".")[-1]
 
 
 def getVersionString():
@@ -148,13 +144,6 @@ def getCPUInfoString():
 		return "%s %s %s (%s)" % (processor, cpu_speed, freq, ngettext("%d core", "%d cores", cpu_count) % cpu_count)
 	except:
 		return _("undefined")
-
-
-def getChipSetString():
-	chipset = fileReadLine("/proc/stb/info/chipset", source=MODULE_NAME)
-	if chipset is None:
-		return _("Undefined")
-	return chipset.lower()
 
 
 def getDriverInstalledDate():

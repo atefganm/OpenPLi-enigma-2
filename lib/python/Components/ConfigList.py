@@ -180,9 +180,6 @@ class ConfigListScreen:
 		from Screens.Setup import SetupSummary
 		return SetupSummary
 
-	def getCurrentItem(self):
-		return self["config"].getCurrent() and self["config"].getCurrent()[1] or None
-
 	def getCurrentEntry(self):
 		return self["config"].getCurrent() and self["config"].getCurrent()[0] or ""
 

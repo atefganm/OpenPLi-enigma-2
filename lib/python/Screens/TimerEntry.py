@@ -6,8 +6,6 @@ from Components.ActionMap import NumberActionMap
 from Components.ConfigList import ConfigListScreen
 from Components.MenuList import MenuList
 from Components.Sources.StaticText import StaticText
-from Components.Button import Button
-from Components.Pixmap import Pixmap
 from Components.Label import Label
 from Components.NimManager import nimmanager
 from Components.SystemInfo import SystemInfo
@@ -25,8 +23,6 @@ from datetime import datetime
 
 
 class TimerEntry(ConfigListScreen, Screen):
-	EMPTY = 0
-
 	def __init__(self, session, timer):
 		Screen.__init__(self, session)
 		self.timer = timer
@@ -39,18 +35,11 @@ class TimerEntry(ConfigListScreen, Screen):
 
 		self.entryDate = None
 		self.entryService = None
-		self.key_red_choice = self.EMPTY
 
-		if self.key_red_choice != Pixmap:
-			self["key_red"] = StaticText(_("Cancel"))
-			self["key_green"] = StaticText(_("Save"))
-			self["key_yellow"] = StaticText(_("Timer type"))
-			self["key_blue"] = StaticText("")
-		if self.key_red_choice != StaticText:
-			self["oktext"] = Label(_("OK"))
-			self["canceltext"] = Label(_("Cancel"))
-			self["ok"] = Pixmap()
-			self["cancel"] = Pixmap()
+		self["key_red"] = StaticText(_("Cancel"))
+		self["key_green"] = StaticText(_("Save"))
+		self["key_yellow"] = StaticText(_("Timer type"))
+		self["key_blue"] = StaticText("")
 
 		self["actions"] = NumberActionMap(["SetupActions", "GlobalActions", "PiPSetupActions", "ColorActions"],
 		{
