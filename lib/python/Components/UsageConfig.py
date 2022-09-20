@@ -125,7 +125,6 @@ def InitUsageConfig():
 			mkdir(defaultValue, 0o755)
 		except OSError as err:
 			pass
-	defaultValue = resolveFilename(SCOPE_HDD)
 	config.usage.default_path = ConfigSelection(default=defaultValue, choices=[(defaultValue, defaultValue)])
 	config.usage.default_path.load()
 	if config.usage.default_path.saved_value:
