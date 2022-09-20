@@ -61,5 +61,4 @@ dist_install_DATA = \
 	timeline.png \
 	unhandled-key.png \
 	volume.png \
-	wizard.png \
-	yellow_circle23x23.png
+	wizard.png
