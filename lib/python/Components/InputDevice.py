@@ -7,29 +7,43 @@ import platform
 from platform import machine
 
 
-class inputDevices:
-
+class InputDevices:
 	def __init__(self):
 		self.Devices = {}
-		self.currentDevice = ""
-		self.getInputDevices()
+		self.currentDevice = None
+		for device in sorted(listdir("/dev/input/")):
 
-	def getInputDevices(self):
-		devices = sorted(os.listdir("/dev/input/"))
-
-		for evdev in devices:
+			if isdir("/dev/input/%s" % device):
+				continue
 			try:
-				buffer = "\0" * 512
-				self.fd = os.open("/dev/input/" + evdev, os.O_RDWR | os.O_NONBLOCK)
-				self.name = ioctl(self.fd, EVIOCGNAME(256), buffer).decode()
-				self.name = self.name[:self.name.find("\0")]
-				os.close(self.fd)
+				_buffer = "\0" * 512
+				self.fd = osopen("/dev/input/%s" % device, O_RDWR | O_NONBLOCK)
+				self.name = ioctl(self.fd, self.EVIOCGNAME(256), _buffer)
+				self.name = self.name[:self.name.find(b"\0")]
+				self.name = ensure_str(self.name)
+				if str(self.name).find("Keyboard") != -1:
+					self.name = 'keyboard'
+				osclose(self.fd)
 			except (IOError, OSError) as err:
-				print("[InputDevice] getInputDevices " + evdev + " <ERROR: ioctl(EVIOCGNAME): " + str(err) + " >")
+				print("[InputDevice] Error: device='%s' getInputDevices <ERROR: ioctl(EVIOCGNAME): '%s'>" % (device, str(err)))
 				self.name = None
 
 			if self.name:
-				self.Devices[evdev] = {'name': self.name, 'type': self.getInputDeviceType(self.name), 'enabled': False, 'configuredName': None}
+				devType = self.getInputDeviceType(self.name.lower())
+				print("[InputDevice] Found device '%s' with name '%s' of type '%s'." % (device, self.name, "Unknown" if devType is None else devType.capitalize()))
+				# What was this for?
+				# if self.name == "aml_keypad":
+				# 	print("[InputDevice] ALERT: Old code flag for 'aml_keypad'.")
+				# 	self.name = "dreambox advanced remote control (native)"
+				# if self.name in BLACKLIST:
+				# 	print("[InputDevice] ALERT: Old code flag for device in blacklist.")
+				# 	continue
+				self.Devices[device] = {
+					"name": self.name,
+					"type": devType,
+					"enabled": False,
+					"configuredName": None
+				}
 
 	def EVIOCGNAME(self, length):
 		# include/uapi/asm-generic/ioctl.h
