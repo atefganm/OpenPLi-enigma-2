@@ -205,7 +205,8 @@ class InitInputDevices:
 		exec(cmd)
 
 
-iInputDevices = inputDevices()
+inputDevices = InputDevices()
+iInputDevices = inputDevices  # Deprecated support old plugins
 
 
 config.plugins.remotecontroltype = ConfigSubsection()
