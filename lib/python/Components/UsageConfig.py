@@ -99,10 +99,10 @@ def InitUsageConfig():
 	for i in (10, 30):
 		choicelist.append((str(i), ngettext("%d second", "%d seconds", i) % i))
 	for i in (60, 120, 300, 600, 1200, 1800):
-		m = i / 60
+		m = i // 60
 		choicelist.append((str(i), ngettext("%d minute", "%d minutes", m) % m))
 	for i in (3600, 7200, 14400):
-		h = i / 3600
+		h = i // 3600
 		choicelist.append((str(i), ngettext("%d hour", "%d hours", h) % h))
 	config.usage.hdd_standby = ConfigSelection(default="300", choices=[("0", _("No standby"))] + choicelist)
 	config.usage.output_12V = ConfigSelection(default="do not change", choices=[
@@ -111,24 +111,24 @@ def InitUsageConfig():
 	config.usage.pip_zero_button = ConfigSelection(default="standard", choices=[
 		("standard", _("Standard")), ("swap", _("Swap PiP and main picture")),
 		("swapstop", _("Move PiP to main picture")), ("stop", _("Stop PiP"))])
-	config.usage.pip_hideOnExit = ConfigSelection(default="without popup", choices=[
-		("no", _("no")), ("popup", _("With popup")), ("without popup", _("Without popup"))])
+	config.usage.pip_hideOnExit = ConfigSelection(default="no", choices=[
+		("no", _("No")), ("popup", _("With popup")), ("without popup", _("Without popup"))])
 	choicelist = [("-1", _("Disabled")), ("0", _("No timeout"))]
 	for i in [60, 300, 600, 900, 1800, 2700, 3600]:
-		m = i / 60
+		m = i // 60
 		choicelist.append((str(i), ngettext("%d minute", "%d minutes", m) % m))
 	config.usage.pip_last_service_timeout = ConfigSelection(default="0", choices=choicelist)
 
-	defaultValue = resolveFilename(SCOPE_HDD)
-	if not exists(defaultValue):
+	if not os.path.exists(resolveFilename(SCOPE_HDD)):
 		try:
-			mkdir(defaultValue, 0o755)
-		except OSError as err:
+			os.mkdir(resolveFilename(SCOPE_HDD), 0o755)
+		except (IOError, OSError):
 			pass
+	defaultValue = resolveFilename(SCOPE_HDD)
 	config.usage.default_path = ConfigSelection(default=defaultValue, choices=[(defaultValue, defaultValue)])
 	config.usage.default_path.load()
 	if config.usage.default_path.saved_value:
-		savedValue = pathjoin(config.usage.default_path.saved_value, "")
+		savedValue = os.path.join(config.usage.default_path.saved_value, "")
 		if savedValue and savedValue != defaultValue:
 			config.usage.default_path.setChoices([(defaultValue, defaultValue), (savedValue, savedValue)], default=defaultValue)
 			config.usage.default_path.value = savedValue
@@ -137,7 +137,7 @@ def InitUsageConfig():
 	config.usage.timer_path = ConfigSelection(default="<default>", choices=choiceList)
 	config.usage.timer_path.load()
 	if config.usage.timer_path.saved_value:
-		savedValue = config.usage.timer_path.saved_value if config.usage.timer_path.saved_value.startswith("<") else pathjoin(config.usage.timer_path.saved_value, "")
+		savedValue = config.usage.timer_path.saved_value if config.usage.timer_path.saved_value.startswith("<") else os.path.join(config.usage.timer_path.saved_value, "")
 		if savedValue and savedValue not in choiceList:
 			config.usage.timer_path.setChoices(choiceList + [(savedValue, savedValue)], default="<default>")
 			config.usage.timer_path.value = savedValue
@@ -145,12 +145,12 @@ def InitUsageConfig():
 	config.usage.instantrec_path = ConfigSelection(default="<default>", choices=choiceList)
 	config.usage.instantrec_path.load()
 	if config.usage.instantrec_path.saved_value:
-		savedValue = config.usage.instantrec_path.saved_value if config.usage.instantrec_path.saved_value.startswith("<") else pathjoin(config.usage.instantrec_path.saved_value, "")
+		savedValue = config.usage.instantrec_path.saved_value if config.usage.instantrec_path.saved_value.startswith("<") else os.path.join(config.usage.instantrec_path.saved_value, "")
 		if savedValue and savedValue not in choiceList:
 			config.usage.instantrec_path.setChoices(choiceList + [(savedValue, savedValue)], default="<default>")
 			config.usage.instantrec_path.value = savedValue
 	config.usage.instantrec_path.save()
-	if not exists(resolveFilename(SCOPE_TIMESHIFT)):
+	if not os.path.exists(resolveFilename(SCOPE_TIMESHIFT)):
 		try:
 			os.mkdir(resolveFilename(SCOPE_TIMESHIFT), 0o755)
 		except:
@@ -159,7 +159,7 @@ def InitUsageConfig():
 	config.usage.timeshift_path = ConfigSelection(default=defaultValue, choices=[(defaultValue, defaultValue)])
 	config.usage.timeshift_path.load()
 	if config.usage.timeshift_path.saved_value:
-		savedValue = pathjoin(config.usage.timeshift_path.saved_value, "")
+		savedValue = os.path.join(config.usage.timeshift_path.saved_value, "")
 		if savedValue and savedValue != defaultValue:
 			config.usage.timeshift_path.setChoices([(defaultValue, defaultValue), (savedValue, savedValue)], default=defaultValue)
 			config.usage.timeshift_path.value = savedValue
