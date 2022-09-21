@@ -4,72 +4,65 @@ from fcntl import ioctl
 import os
 import struct
 import platform
-from platform import machine
+
+# include/uapi/asm-generic/ioctl.h
+IOC_NRBITS = 8
+IOC_TYPEBITS = 8
+IOC_SIZEBITS = 13 if "mips" in platform.machine() else 14
+IOC_DIRBITS = 3 if "mips" in platform.machine() else 2
+
+IOC_NRSHIFT = 0
+IOC_TYPESHIFT = IOC_NRSHIFT + IOC_NRBITS
+IOC_SIZESHIFT = IOC_TYPESHIFT + IOC_TYPEBITS
+IOC_DIRSHIFT = IOC_SIZESHIFT + IOC_SIZEBITS
+
+IOC_READ = 2
 
 
-class InputDevices:
+def EVIOCGNAME(length):
+	return (IOC_READ << IOC_DIRSHIFT) | (length << IOC_SIZESHIFT) | (0x45 << IOC_TYPESHIFT) | (0x06 << IOC_NRSHIFT)
+
+
+class inputDevices:
+
 	def __init__(self):
 		self.Devices = {}
-		self.currentDevice = None
-		for device in sorted(listdir("/dev/input/")):
+		self.currentDevice = ""
+		self.getInputDevices()
 
-			if isdir("/dev/input/%s" % device):
-				continue
+	def getInputDevices(self):
+		devices = sorted(os.listdir("/dev/input/"))
+
+		for evdev in devices:
 			try:
-				_buffer = "\0" * 512
-				self.fd = osopen("/dev/input/%s" % device, O_RDWR | O_NONBLOCK)
-				self.name = ioctl(self.fd, self.EVIOCGNAME(256), _buffer)
-				self.name = self.name[:self.name.find(b"\0")]
-				self.name = ensure_str(self.name)
-				if str(self.name).find("Keyboard") != -1:
-					self.name = 'keyboard'
-				osclose(self.fd)
+				buffer = "\0" * 512
+				self.fd = os.open("/dev/input/" + evdev, os.O_RDWR | os.O_NONBLOCK)
+				self.name = ioctl(self.fd, EVIOCGNAME(256), buffer).decode()
+				self.name = self.name[:self.name.find("\0")]
+				os.close(self.fd)
 			except (IOError, OSError) as err:
-				print("[InputDevice] Error: device='%s' getInputDevices <ERROR: ioctl(EVIOCGNAME): '%s'>" % (device, str(err)))
+				print("[InputDevice] getInputDevices " + evdev + " <ERROR: ioctl(EVIOCGNAME): " + str(err) + " >")
 				self.name = None
 
 			if self.name:
-				devType = self.getInputDeviceType(self.name.lower())
-				print("[InputDevice] Found device '%s' with name '%s' of type '%s'." % (device, self.name, "Unknown" if devType is None else devType.capitalize()))
-				# What was this for?
-				# if self.name == "aml_keypad":
-				# 	print("[InputDevice] ALERT: Old code flag for 'aml_keypad'.")
-				# 	self.name = "dreambox advanced remote control (native)"
-				# if self.name in BLACKLIST:
-				# 	print("[InputDevice] ALERT: Old code flag for device in blacklist.")
-				# 	continue
-				self.Devices[device] = {
-					"name": self.name,
-					"type": devType,
-					"enabled": False,
-					"configuredName": None
-				}
-
-	def EVIOCGNAME(self, length):
-		# include/uapi/asm-generic/ioctl.h
-		IOC_NRBITS = 8
-		IOC_TYPEBITS = 8
-		if SystemInfo["OLDE2API"]:
-			IOC_SIZEBITS = 13
-		else:
-			IOC_SIZEBITS = 13 if "mips" in machine() else 14
-		IOC_NRSHIFT = 0
-		IOC_TYPESHIFT = IOC_NRSHIFT + IOC_NRBITS
-		IOC_SIZESHIFT = IOC_TYPESHIFT + IOC_TYPEBITS
-		IOC_DIRSHIFT = IOC_SIZESHIFT + IOC_SIZEBITS
-		IOC_READ = 2
-		return (IOC_READ << IOC_DIRSHIFT) | (length << IOC_SIZESHIFT) | (0x45 << IOC_TYPESHIFT) | (0x06 << IOC_NRSHIFT)
+				self.Devices[evdev] = {'name': self.name, 'type': self.getInputDeviceType(self.name), 'enabled': False, 'configuredName': None}
 
 	def getInputDeviceType(self, name):
-		if "remote control" in name:
+		if "remote control" in str(name).lower():
 			return "remote"
-		elif "keyboard" in name:
+		elif "keyboard" in str(name).lower():
 			return "keyboard"
-		elif "mouse" in name:
+		elif "mouse" in str(name).lower():
 			return "mouse"
 		else:
-			print("[InputDevice] Warning: Unknown device type: '%s'!" % name)
+			print("[InputDevice] Unknown device type:", name)
 			return None
+
+	def getDeviceName(self, x):
+		if x in self.Devices.keys():
+			return self.Devices[x].get("name", x)
+		else:
+			return "Unknown device name"
 
 	def getDeviceList(self):
 		return sorted(self.Devices.keys())
@@ -84,15 +77,6 @@ class InputDevices:
 			if attribute in self.Devices[device]:
 				return self.Devices[device][attribute]
 		return None
-
-	def getDeviceName(self, device):
-		if device in list(self.Devices.keys()):
-			return self.Devices[device].get("name", device)
-		return "Unknown device name"
-
-	def setDeviceName(self, device, value):
-		# print("[InputDevices] setDeviceName for device %s to %s" % (device,value))
-		self.setDeviceAttribute(device, "configuredName", value)
 
 	def setEnabled(self, device, value):
 		oldval = self.getDeviceAttribute(device, 'enabled')
@@ -205,8 +189,7 @@ class InitInputDevices:
 		exec(cmd)
 
 
-inputDevices = InputDevices()
-iInputDevices = inputDevices  # Deprecated support old plugins
+iInputDevices = inputDevices()
 
 
 config.plugins.remotecontroltype = ConfigSubsection()
