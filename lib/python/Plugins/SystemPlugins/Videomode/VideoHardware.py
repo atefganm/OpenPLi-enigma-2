@@ -2,6 +2,7 @@ from Components.config import config, ConfigSelection, ConfigSubDict, ConfigYesN
 from Components.SystemInfo import SystemInfo
 from Tools.CList import CList
 from Tools.HardwareInfo import HardwareInfo
+from Components.About import about
 import os
 
 # The "VideoHardware" is the interface to /proc/stb/video.
@@ -10,7 +11,7 @@ import os
 # selected mode. No other strict checking is done.
 
 config.av.edid_override = ConfigYesNo(default=True)
-
+chipsetstring = about.getChipSetString()
 
 class VideoHardware:
 	rates = {} # high-level, use selectable modes.
@@ -404,7 +405,7 @@ class VideoHardware:
 			wss = "auto"
 
 		print("[VideoHardware] -> setting aspect, policy, policy2, wss", aspect, policy, policy2, wss)
-		if chipsetstring.startswith("meson-6") and if HardwareInfo().get_device_name() in ("dreamone", "dreamtwo"):
+		if chipsetstring.startswith("meson-6") and HardwareInfo().get_device_name() in ("dreamone", "dreamtwo"):
 			arw = "0"
 			if config.av.policy_43.value == "bestfit":
 				arw = "10"
