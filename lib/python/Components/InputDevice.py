@@ -47,21 +47,15 @@ class inputDevices:
 		return (IOC_READ << IOC_DIRSHIFT) | (length << IOC_SIZESHIFT) | (0x45 << IOC_TYPESHIFT) | (0x06 << IOC_NRSHIFT)
 
 	def getInputDeviceType(self, name):
-		if "remote control" in str(name).lower():
+		if "remote control" in name:
 			return "remote"
-		elif "keyboard" in str(name).lower():
+		elif "keyboard" in name:
 			return "keyboard"
-		elif "mouse" in str(name).lower():
+		elif "mouse" in name:
 			return "mouse"
 		else:
-			print("[InputDevice] Unknown device type:", name)
+			print("[InputDevice] Warning: Unknown device type: '%s'!" % name)
 			return None
-
-	def getDeviceName(self, x):
-		if x in self.Devices.keys():
-			return self.Devices[x].get("name", x)
-		else:
-			return "Unknown device name"
 
 	def getDeviceList(self):
 		return sorted(self.Devices.keys())
@@ -76,6 +70,15 @@ class inputDevices:
 			if attribute in self.Devices[device]:
 				return self.Devices[device][attribute]
 		return None
+
+	def getDeviceName(self, device):
+		if device in list(self.Devices.keys()):
+			return self.Devices[device].get("name", device)
+		return "Unknown device name"
+
+	def setDeviceName(self, device, value):
+		# print("[InputDevices] setDeviceName for device %s to %s" % (device,value))
+		self.setDeviceAttribute(device, "configuredName", value)
 
 	def setEnabled(self, device, value):
 		oldval = self.getDeviceAttribute(device, 'enabled')
