@@ -11,8 +11,8 @@ from Components.config import ConfigSubsection, ConfigInteger, ConfigSelection, 
 from Components.SystemInfo import BoxInfo, SystemInfo
 from Tools.Directories import SCOPE_KEYMAPS, SCOPE_SKIN, fileReadLine, fileWriteLine, fileReadLines, fileReadXML, resolveFilename, pathExists
 
+from six import ensure_str
 MODULE_NAME = __name__.split(".")[-1]
-
 
 REMOTE_MODEL = 0
 REMOTE_RCTYPE = 1
