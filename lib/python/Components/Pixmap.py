@@ -61,13 +61,10 @@ class PixmapConditional(ConditionalWidget, Pixmap):
 class MovingPixmap(Pixmap):
 	def __init__(self):
 		Pixmap.__init__(self)
-
 		self.moving = False
-
 		self.x = 0  # Get actual value after skin applied.
 		self.y = 0  # Get actual value after skin applied.
 		self.clearPath()
-
 		self.moveTimer = eTimer()
 		self.moveTimer.callback.append(self.doMove)
 		self.callback = None
@@ -81,7 +78,6 @@ class MovingPixmap(Pixmap):
 		if self.moving:
 			self.moving = False
 			self.moveTimer.stop()
-
 		self.path = []
 		self.currDest = 0
 		self.repeated = repeated
@@ -124,7 +120,6 @@ class MovingPixmap(Pixmap):
 			self.move(int(self.x), int(self.y))
 		except Exception:  # Moving not possible.  Widget not there any more.  Stop moving.
 			self.stopMoving()
-
 		if self.time == 0:
 			self.currDest += 1
 			self.moveTimer.stop()
@@ -184,6 +179,6 @@ class MultiPixmap(Pixmap):
 	def setPixmapNum(self, index):
 		if self.instance:
 			if len(self.pixmaps) > index:
-				self.instance.setPixmap(self.pixmaps[index]
+				self.instance.setPixmap(self.pixmaps[index])
 			else:
 				print("[Pixmap] setPixmapNum(%d) failed!  Defined pixmaps: %s." % (index, str(self.pixmaps)))
