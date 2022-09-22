@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import errno
+from inspect import stack
 import os
 from os import F_OK, R_OK, W_OK, access, chmod, listdir, makedirs, mkdir, readlink, rename, rmdir, sep, stat, statvfs, symlink, utime, walk
 from os.path import isdir, isfile, join as pathjoin
@@ -10,11 +11,10 @@ from stat import S_IMODE
 from sys import _getframe as getframe
 from unicodedata import normalize
 
-pathExists = os.path.exists
+DEFAULT_MODULE_NAME = __name__.split(".")[-1]
 
 forceDebug = eGetEnigmaDebugLvl() > 4
-
-DEFAULT_MODULE_NAME = __name__.split(".")[-1]
+pathExists = os.path.exists
 
 SCOPE_HOME = 0  # DEBUG: Not currently used in Enigma2.
 SCOPE_LANGUAGE = 1
@@ -649,10 +649,8 @@ def isPluginInstalled(pluginName, pluginFile="plugin", pluginType=None):
 				return True
 	return False
 
-
 def sanitizeFilename(filename):
 	"""Return a fairly safe version of the filename.
-
 	We don't limit ourselves to ascii, because we want to keep municipality
 	names, etc, but we do want to get rid of anything potentially harmful,
 	and make sure we do not exceed Windows filename length limits.
