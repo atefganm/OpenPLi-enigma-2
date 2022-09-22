@@ -1,6 +1,7 @@
 from fcntl import ioctl
 from os import listdir, open as osopen, close as osclose, write as oswrite, O_RDWR, O_NONBLOCK
 from os.path import isdir, isfile
+from platform import machine
 from struct import pack
 
 from enigma import eRCInput
