@@ -100,14 +100,7 @@ class AudioSelection(ConfigListScreen, Screen):
 					self.settings.downmix_ac3 = ConfigOnOff(default=config.av.downmix_ac3.value)
 				self.settings.downmix_ac3.addNotifier(self.changeAC3Downmix, initial_call=False)
 				conflist.append(getConfigListEntry(_("AC3 downmix"), self.settings.downmix_ac3, None))
-					self.settings.downmix.addNotifier(self.changeAC3Downmix, initial_call=False)
-					extra_text = " - AC3"
-					if SystemInfo["CanDownmixDTS"]:
-						extra_text += ",DTS"
-					if SystemInfo["CanDownmixAAC"]:
-						extra_text += ",AAC"
-					conflist.append(getConfigListEntry(_("Multi channel downmix") + extra_text, self.settings.downmix))
-					self["key_red"].setBoolean(True)
+				self["key_red"].setBoolean(True)
 
 			if n > 0:
 				self.audioChannel = service.audioChannel()
