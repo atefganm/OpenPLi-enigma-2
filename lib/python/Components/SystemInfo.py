@@ -310,4 +310,12 @@ if model in ("et7500", "et8500"):
 SystemInfo["HasFBCtuner"] = ["Vuplus DVB-C NIM(BCM3158)", "Vuplus DVB-C NIM(BCM3148)", "Vuplus DVB-S NIM(7376 FBC)", "Vuplus DVB-S NIM(45308X FBC)", "Vuplus DVB-S NIM(45208 FBC)", "DVB-S2 NIM(45208 FBC)", "DVB-S2X NIM(45308X FBC)", "DVB-S2 NIM(45308 FBC)", "DVB-C NIM(3128 FBC)", "BCM45208", "BCM45308X", "BCM3158"]
 SystemInfo["HasHiSi"] = pathExists("/proc/hisi")
 SystemInfo["OLDE2API"] = model in ("dm800")
+SystemInfo["CanBTAudio"] = fileCheck("/proc/stb/audio/btaudio")
+SystemInfo["CanBTAudioDelay"] = fileCheck("/proc/stb/audio/btaudio_delay")
+SystemInfo["CanAC3plusTranscode"] = fileExists("/proc/stb/audio/ac3plus_choices")
+SystemInfo["CanDTSHD"] = fileExists("/proc/stb/audio/dtshd_choices")
+SystemInfo["CanWMAPRO"] = fileExists("/proc/stb/audio/wmapro")
+SystemInfo["CanDownmixAACPlus"] = fileExists("/proc/stb/audio/aacplus_choices")
+SystemInfo["CanAACTranscode"] = fileExists("/proc/stb/audio/aac_transcode_choices")
+SystemInfo["CanSyncMode"] = fileExists("/proc/stb/video/sync_mode_choices")
 SystemInfo["FCCactive"] = False
